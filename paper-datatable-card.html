@@ -56,6 +56,17 @@
 				@apply(--paper-font-common-base);
 				color: var(--paper-datatable-top-toolbar-text-color);
 			}
+			#topBlock[fixed-header]{
+				position: fixed;
+				display: flex;
+		    align-items: center;
+		    flex-direction: row;
+				background: white;
+				z-index: 999;
+			}
+			#tableWrapper[fixed-header]{
+				padding-top: 64px;
+			}
 			#selectionToolbar > ::content paper-icon-button, .toolbar > ::content paper-icon-button,
 			#selectionToolbar > ::content paper-icon, .toolbar > ::content paper-icon,
 			#selectionToolbar > ::content iron-icon, .toolbar > ::content iron-icon{
@@ -96,9 +107,9 @@
 				margin-right: 18px;
 			}
 		</style>
-		<paper-material elevation="1">
-			<div class="horizontal center layout" id="topBlock">
-				<div class="flex header">
+		<paper-material elevation="1" id="wrapperPM">
+			<div class="horizontal center layout" id="topBlock" fixed-header$="{{fixedHeader}}">
+				<div class="flex header" fixed-header$="{{fixedHeader}}">
 					<span>{{header}}</span>
 				</div>
 				<div id="toolbar-main" class="toolbar">
@@ -119,8 +130,8 @@
 					</div>
 				</div>
 			</div>
-			<div>
-				<content select="paper-datatable"></content>
+			<div id="tableWrapper" fixed-header$="{{fixedHeader}}">
+				<content select="paper-datatable" id="datatableSelector"></content>
 			</div>
 			<div class="horizontal center layout" id="bottomBlock">
 				<div class="flex"></div>
@@ -160,6 +171,10 @@
 
 				is: 'paper-datatable-card',
 				properties: {
+					fixedHeader:{
+						type: Boolean,
+						value: true
+					},
 					/**
 					 * Heading shown above the data table
 					 *
@@ -279,10 +294,28 @@
 					this.set('_sortProperty', this.idProperty);
 				},
 				observers: [
+					'_fixedHeaderChange(fixedHeader)',
 					'retrieveVisibleData(dataSource, pageSize, page, _datatable, _sortDirection, _sortProperty)',
 					'_setNumberOfItems(dataSource.length)',
 					'_createCache(dataSource.queryForIds)'
 				],
+				_fixedHeaderChange: function(){
+					if( this.fixedHeader ){
+						//listen resize action
+						window.addEventListener('resize',this._changePMStyle.bind(this));
+						//add fixed-header to paper-datatable
+						this.getContentChildren('#datatableSelector')[0].fixedHeader = true;
+					} else {
+					}
+				},
+				_changePMStyle: function(){
+					var width = this.$.wrapperPM.getComputedStyleValue('width');
+					var pmWidth = (parseInt(width.split('px')[0]) - 30) + 'px';
+					this.$.topBlock.style.width = pmWidth;
+				},
+				attached: function(){
+					this._changePMStyle();
+				},
 				_createCache: function(){
 					this._cacheUsed = true;
 					this._cache = new WeakCache(100);

@@ -231,12 +231,21 @@
 			.partialSelection[data-checked]{
 				transform: scale(1) rotate(0deg);
 			}
+			:host([fixed-header]){
+				padding-top: 57px;
+			}
+			thead[fixed-header]{
+				position: fixed;
+				background: white;
+				z-index: 999;
+				top:148px;
+			}
 		</style>
 		<!--<content select="paper-datatable-column"></content>-->
 		<paper-datatable-edit-dialog id="dialog"></paper-datatable-edit-dialog>
 		<div id="container">
 			<table>
-				<thead>
+				<thead fixed-header$={{fixedHeader}} id="headerWrapper">
 					<tr>
 						<template is="dom-if" if="{{selectable}}">
 							<th>
@@ -338,6 +347,11 @@ A [material design implementation of a data table](https://www.google.com/design
 				is: 'paper-datatable',
 
 				properties: {
+					fixedHeader:{
+						type:Boolean,
+						value:true,
+						reflectToAttribute: true
+					},
 					/**
 					 * Read only array of all the `paper-datatable-column`'s
 					 *
@@ -485,6 +499,7 @@ A [material design implementation of a data table](https://www.google.com/design
 				],
 
 				observers: [
+					'_fixedHeaderChange(fixedHeader)',
 					/*'restructureData(data.*, _columns.splices)',*/
 					'_setRowKeys(data.splices)',
 					'_notifyPathOnInstances(data.*)',
@@ -496,6 +511,21 @@ A [material design implementation of a data table](https://www.google.com/design
 				listeners: {
 					'container.scroll': '_triggerDialogResize',
 					'iron-resize': '_resizeListener'
+				},
+
+				_fixedHeaderChange: function(){
+					if( this.fixedHeader ){
+						//listen resize action
+						window.addEventListener('resize',this._changePMStyle.bind(this));
+					} else {
+					}
+				},
+				_changePMStyle: function(){
+					var width = this.getComputedStyleValue('width');
+					this.$.headerWrapper.style['width'] = width;console.log(width);
+				},
+				attached: function(){
+					this._changePMStyle();
 				},
 
 				ready: function() {
