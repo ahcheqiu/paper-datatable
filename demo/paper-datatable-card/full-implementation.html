@@ -69,7 +69,7 @@
 					<div toolbar-select-single>
 						<paper-icon-button icon="datatable:editable" on-tap="editDialogForSelected"></paper-icon-button>
 					</div>
-					<paper-datatable id="datatable" selectable multi-selection selected-items="{{selectedItems}}" on-row-tap="rowTapped">
+					<paper-datatable id="datatable" multi-selection selected-items="{{selectedItems}}" on-row-tap="rowTapped">
 						<div no-results>
 							Loading or no more items...
 						</div>
@@ -115,6 +115,15 @@
 
 		<script>
 			var app = document.querySelector('#app');
+
+			setTimeout(function(){
+				document.querySelector('#datatable').actions = [
+					{
+						icon:'delete',
+						event:'delete'
+					}
+				];
+			},1000);
 
 			app.data = {
 				queryForIds: function(sort, page, pageSize){
