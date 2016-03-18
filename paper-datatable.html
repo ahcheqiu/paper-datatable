@@ -231,6 +231,12 @@
 			.partialSelection[data-checked]{
 				transform: scale(1) rotate(0deg);
 			}
+			tr .actionsBtns{
+				color:white;
+			}
+			tr:hover .actionsBtns{
+				color:black;
+			}
 		</style>
 		<!--<content select="paper-datatable-column"></content>-->
 		<paper-datatable-edit-dialog id="dialog"></paper-datatable-edit-dialog>
@@ -271,7 +277,7 @@
 								<td on-tap="_cellTapped" style="padding-left: 8px;">
 									<div style$="{{actionsWrapperStyle}}">
 										<template is="dom-repeat" items="{{actions}}" id="actionsRepeat" on-dom-change="_resetActionsStyle">
-											<paper-icon-button icon="{{item.icon}}" fire-event$="{{item.event}}" on-tap="_actionsClick"></paper-icon-button>
+											<paper-icon-button icon="{{item.icon}}" fire-event$="{{item.event}}" on-tap="_actionsClick" class="actionsBtns"></paper-icon-button>
 										</template>
 									</div>
 								</td>
